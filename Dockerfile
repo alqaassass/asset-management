@@ -2,9 +2,10 @@
 FROM node:18-alpine AS client-build
 WORKDIR /app/client
 COPY client/package*.json ./
+RUN npm install -g vite
 RUN npm install
 COPY client/ ./
-RUN npm run build
+RUN vite build
 
 # Production stage
 FROM node:18-alpine

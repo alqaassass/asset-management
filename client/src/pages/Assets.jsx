@@ -4,11 +4,21 @@ import api from '../api/axios';
 function Assets() {
   const [assets, setAssets] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [editingAsset, setEditingAsset] = useState(null);
   const [qrCode, setQrCode] = useState(null);
   const [assetTypes, setAssetTypes] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [alert, setAlert] = useState({ show: false, message: '', type: '' });
   const [formData, setFormData] = useState({
+    name: '',
+    type: '',
+    serial_number: '',
+    location: '',
+    assigned_to: '',
+    status: 'active'
+  });
+  const [editFormData, setEditFormData] = useState({
     name: '',
     type: '',
     serial_number: '',
@@ -50,18 +60,35 @@ function Assets() {
     }
   };
 
+  const showAlert = (message, type = 'success') => {
+    setAlert({ show: true, message, type });
+    setTimeout(() => {
+      setAlert({ show: false, message: '', type: '' });
+    }, 5000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (editingAsset) {
-        await api.put(`/assets/${editingAsset.id}`, formData);
-      } else {
-        await api.post('/assets', formData);
-      }
+      await api.post('/assets', formData);
       fetchAssets();
       resetForm();
+      showAlert('Asset created successfully!', 'success');
     } catch (error) {
-      alert(error.response?.data?.error || 'Error saving asset');
+      showAlert(error.response?.data?.error || 'Error creating asset', 'error');
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await api.put(`/assets/${editingAsset.id}`, editFormData);
+      fetchAssets();
+      setShowEditModal(false);
+      setEditingAsset(null);
+      showAlert('Asset updated successfully!', 'success');
+    } catch (error) {
+      showAlert(error.response?.data?.error || 'Error updating asset', 'error');
     }
   };
 
@@ -70,15 +97,16 @@ function Assets() {
       try {
         await api.delete(`/assets/${id}`);
         fetchAssets();
+        showAlert('Asset deleted successfully!', 'success');
       } catch (error) {
-        alert('Error deleting asset');
+        showAlert('Error deleting asset', 'error');
       }
     }
   };
 
   const handleEdit = (asset) => {
     setEditingAsset(asset);
-    setFormData({
+    setEditFormData({
       name: asset.name,
       type: asset.type,
       serial_number: asset.serial_number,
@@ -86,7 +114,7 @@ function Assets() {
       assigned_to: asset.assigned_to || '',
       status: asset.status
     });
-    setShowForm(true);
+    setShowEditModal(true);
   };
 
   const showQR = async (id) => {
@@ -107,12 +135,64 @@ function Assets() {
       assigned_to: '',
       status: 'active'
     });
-    setEditingAsset(null);
     setShowForm(false);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setEditingAsset(null);
+    setEditFormData({
+      name: '',
+      type: '',
+      serial_number: '',
+      location: '',
+      assigned_to: '',
+      status: 'active'
+    });
   };
 
   return (
     <div>
+      {/* Success/Error Alert */}
+      {alert.show && (
+        <div className={`mb-6 p-4 rounded-md ${
+          alert.type === 'success' 
+            ? 'bg-green-50 border border-green-200 text-green-800' 
+            : 'bg-red-50 border border-red-200 text-red-800'
+        }`}>
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              {alert.type === 'success' ? (
+                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium">{alert.message}</p>
+            </div>
+            <div className="ml-auto pl-3">
+              <button
+                onClick={() => setAlert({ show: false, message: '', type: '' })}
+                className={`inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  alert.type === 'success'
+                    ? 'text-green-500 hover:bg-green-100 focus:ring-green-600'
+                    : 'text-red-500 hover:bg-red-100 focus:ring-red-600'
+                }`}
+              >
+                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Assets</h1>
         <button
@@ -125,9 +205,7 @@ function Assets() {
 
       {showForm && (
         <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">
-            {editingAsset ? 'Edit Asset' : 'Add New Asset'}
-          </h2>
+          <h2 className="text-xl font-semibold mb-4">Add New Asset</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
@@ -217,7 +295,7 @@ function Assets() {
               type="submit"
               className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              {editingAsset ? 'Update Asset' : 'Create Asset'}
+              Create Asset
             </button>
           </form>
         </div>
@@ -333,8 +411,131 @@ function Assets() {
         ))}
       </div>
 
+      {/* Edit Asset Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">Edit Asset</h3>
+                <button
+                  onClick={closeEditModal}
+                  className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                >
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <form onSubmit={handleEditSubmit} className="px-6 py-4">
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Asset Name <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={editFormData.name}
+                      onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Type <span className="text-red-600">*</span>
+                    </label>
+                    <select
+                      required
+                      value={editFormData.type}
+                      onChange={(e) => setEditFormData({ ...editFormData, type: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">Select Type</option>
+                      {assetTypes.map((type) => (
+                        <option key={type.id} value={type.name}>{type.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Serial Number <span className="text-red-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={editFormData.serial_number}
+                      onChange={(e) => setEditFormData({ ...editFormData, serial_number: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      value={editFormData.location}
+                      onChange={(e) => setEditFormData({ ...editFormData, location: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Assigned To
+                    </label>
+                    <select
+                      value={editFormData.assigned_to}
+                      onChange={(e) => setEditFormData({ ...editFormData, assigned_to: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">Select Employee (Optional)</option>
+                      {employees.map((employee) => (
+                        <option key={employee.id} value={employee.name}>{employee.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Status
+                    </label>
+                    <select
+                      value={editFormData.status}
+                      onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Update Asset
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {qrCode && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-40">
           <div className="bg-white rounded-lg p-6 max-w-sm w-full">
             <h3 className="text-lg font-semibold mb-4">Asset QR Code</h3>
             <img src={qrCode} alt="QR Code" className="w-full" />
