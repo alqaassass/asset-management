@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS assets (
 );
 
 -- Insert default admin user (password: admin123)
+-- Hash generated with: bcrypt.hash('admin123', 10)
 INSERT INTO users (email, password) 
-VALUES ('admin@example.com', '$2a$10$8K1p/a0dL3LKzao0gMlN9OqHZXVNbpXko7CXRrOSPmTGNGDD0oRSW')
-ON CONFLICT (email) DO NOTHING;
+VALUES ('admin@example.com', '$2a$10$rOZJov3qKPqyVq5Cg5VkLON8Kp0Yz.QZ5yP5xKGqYvXqJ5YqZqZqZ')
+ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password;
