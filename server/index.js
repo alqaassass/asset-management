@@ -5,6 +5,8 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
 const assetRoutes = require('./routes/assets');
+const assetTypesRoutes = require('./routes/assetTypes');
+const employeesRoutes = require('./routes/employees');
 
 const app = express();
 
@@ -14,6 +16,8 @@ app.use(express.json());
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/assets', assetRoutes);
+app.use('/api/asset-types', assetTypesRoutes);
+app.use('/api/employees', employeesRoutes);
 
 // Dashboard stats endpoint
 app.get('/api/dashboard/stats', async (req, res) => {

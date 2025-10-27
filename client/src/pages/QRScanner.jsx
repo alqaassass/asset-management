@@ -26,16 +26,29 @@ function QRScanner() {
   }, [scanning]);
 
   const onScanSuccess = (decodedText) => {
+    console.log('QR Code scanned:', decodedText);
+    
     try {
+      // Try to parse as URL first
       const url = new URL(decodedText);
       const pathParts = url.pathname.split('/');
       const assetId = pathParts[pathParts.length - 1];
       
-      if (assetId) {
+      console.log('Extracted asset ID from URL:', assetId);
+      
+      if (assetId && !isNaN(assetId)) {
         navigate(`/asset/${assetId}`);
+      } else {
+        alert(`Invalid QR code. Scanned: ${decodedText}\nExtracted ID: ${assetId}`);
       }
     } catch (error) {
-      alert('Invalid QR code. Please scan an asset QR code.');
+      console.log('Not a URL, trying as direct ID:', decodedText);
+      // If not a URL, check if it's just a number (asset ID)
+      if (!isNaN(decodedText) && decodedText.trim() !== '') {
+        navigate(`/asset/${decodedText}`);
+      } else {
+        alert(`Invalid QR code format.\nScanned text: ${decodedText}`);
+      }
     }
   };
 

@@ -93,9 +93,13 @@ router.get('/:id/qr', authMiddleware, async (req, res) => {
     const { id } = req.params;
     const assetUrl = `${process.env.CLIENT_URL}/asset/${id}`;
     
+    console.log('Generating QR code for URL:', assetUrl);
+    console.log('CLIENT_URL env var:', process.env.CLIENT_URL);
+    
     const qrCode = await QRCode.toDataURL(assetUrl);
-    res.json({ qrCode });
+    res.json({ qrCode, url: assetUrl });
   } catch (error) {
+    console.error('QR generation error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
