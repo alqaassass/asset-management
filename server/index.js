@@ -51,7 +51,7 @@ app.get('/api/dashboard/stats', async (req, res) => {
     const locationStats = await pool.query(`
       SELECT location, COUNT(*) as count 
       FROM assets 
-      WHERE location IS NOT NULL
+      WHERE location IS NOT NULL AND location != ''
       GROUP BY location 
       ORDER BY count DESC 
       LIMIT 10

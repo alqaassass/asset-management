@@ -8,22 +8,30 @@ function Layout({ onLogout }) {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-sm">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      <nav className="bg-white/80 backdrop-blur-md shadow-lg border-b border-gray-200/50 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <h1 className="text-lg sm:text-xl font-bold text-gray-900">IT Asset Manager</h1>
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-200">
+                    <span className="text-white text-xl">📦</span>
+                  </div>
+                  <div>
+                    <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">IT Asset Manager</h1>
+                    <p className="text-xs text-gray-500 hidden sm:block">Manage your assets efficiently</p>
+                  </div>
+                </div>
               </div>
               <div className="hidden md:ml-6 md:flex md:space-x-4 lg:space-x-8">
                 <Link
                   to="/dashboard"
                   className={`${
                     isActive('/dashboard')
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium`}
+                      ? 'border-blue-500 text-blue-600 bg-blue-50'
+                      : 'border-transparent text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                  } inline-flex items-center px-3 pt-1 border-b-2 text-xs lg:text-sm font-medium transition-all duration-200 rounded-t-lg`}
                 >
                   Dashboard
                 </Link>
@@ -31,9 +39,9 @@ function Layout({ onLogout }) {
                   to="/assets"
                   className={`${
                     isActive('/assets')
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium`}
+                      ? 'border-blue-500 text-blue-600 bg-blue-50'
+                      : 'border-transparent text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                  } inline-flex items-center px-3 pt-1 border-b-2 text-xs lg:text-sm font-medium transition-all duration-200 rounded-t-lg`}
                 >
                   Assets
                 </Link>
@@ -41,9 +49,9 @@ function Layout({ onLogout }) {
                   to="/scan"
                   className={`${
                     isActive('/scan')
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium`}
+                      ? 'border-blue-500 text-blue-600 bg-blue-50'
+                      : 'border-transparent text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                  } inline-flex items-center px-3 pt-1 border-b-2 text-xs lg:text-sm font-medium transition-all duration-200 rounded-t-lg`}
                 >
                   Scan
                 </Link>
@@ -51,9 +59,9 @@ function Layout({ onLogout }) {
                   to="/asset-types"
                   className={`${
                     isActive('/asset-types')
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium`}
+                      ? 'border-blue-500 text-blue-600 bg-blue-50'
+                      : 'border-transparent text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                  } inline-flex items-center px-3 pt-1 border-b-2 text-xs lg:text-sm font-medium transition-all duration-200 rounded-t-lg`}
                 >
                   Types
                 </Link>
@@ -61,19 +69,26 @@ function Layout({ onLogout }) {
                   to="/employees"
                   className={`${
                     isActive('/employees')
-                      ? 'border-blue-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  } inline-flex items-center px-1 pt-1 border-b-2 text-xs lg:text-sm font-medium`}
+                      ? 'border-blue-500 text-blue-600 bg-blue-50'
+                      : 'border-transparent text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                  } inline-flex items-center px-3 pt-1 border-b-2 text-xs lg:text-sm font-medium transition-all duration-200 rounded-t-lg`}
                 >
                   Users
                 </Link>
               </div>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center space-x-3">
+              <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs font-medium text-gray-600">Online</span>
+              </div>
               <button
                 onClick={onLogout}
-                className="hidden sm:inline-flex ml-3 items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
+                className="hidden sm:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-red-500 via-red-600 to-pink-600 hover:from-red-600 hover:via-red-700 hover:to-pink-700 shadow-md hover:shadow-xl transition-all duration-200 transform hover:scale-105"
               >
+                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
                 Logout
               </button>
               <button
