@@ -11,13 +11,22 @@ function Assets() {
   const [assetTypes, setAssetTypes] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [alert, setAlert] = useState({ show: false, message: '', type: '' });
+  const [showColumnSettings, setShowColumnSettings] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState({
+    name: true,
+    type: true,
+    serial: true,
+    location: true,
+    assigned_to: true,
+    status: true
+  });
   const [formData, setFormData] = useState({
     name: '',
     type: '',
     serial_number: '',
     location: '',
     assigned_to: '',
-    status: 'active'
+    status: 'in_use'
   });
   const [editFormData, setEditFormData] = useState({
     name: '',
@@ -25,7 +34,7 @@ function Assets() {
     serial_number: '',
     location: '',
     assigned_to: '',
-    status: 'active'
+    status: 'in_use'
   });
 
   useEffect(() => {
@@ -67,6 +76,47 @@ function Assets() {
       setAlert({ show: false, message: '', type: '' });
     }, 5000);
   };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'in_use':
+        return 'bg-green-100 text-green-800';
+      case 'inactive':
+        return 'bg-red-100 text-red-800';
+      case 'in_repair':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'in_use':
+        return 'In Use';
+      case 'inactive':
+        return 'Inactive';
+      case 'in_repair':
+        return 'In Repair';
+      default:
+        return status;
+    }
+  };
+
+  const toggleColumn = (column) => {
+    setVisibleColumns(prev => ({
+      ...prev,
+      [column]: !prev[column]
+    }));
+  };
+
+  const filteredAssets = assets.filter(asset =>
+    asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    asset.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    asset.serial_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (asset.location && asset.location.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (asset.assigned_to && asset.assigned_to.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -139,17 +189,7 @@ function Assets() {
     setShowForm(false);
   };
 
-  // Filter assets based on search query
-  const filteredAssets = assets.filter(asset => {
-    const query = searchQuery.toLowerCase();
-    return (
-      asset.name.toLowerCase().includes(query) ||
-      asset.type.toLowerCase().includes(query) ||
-      asset.serial_number.toLowerCase().includes(query) ||
-      (asset.location && asset.location.toLowerCase().includes(query)) ||
-      (asset.assigned_to && asset.assigned_to.toLowerCase().includes(query))
-    );
-  });
+
 
   const closeEditModal = () => {
     setShowEditModal(false);
@@ -222,9 +262,9 @@ function Assets() {
         </button>
       </div>
 
-      {/* Search Bar */}
-      <div className="mb-8">
-        <div className="relative group">
+      {/* Search Bar and Column Settings */}
+      <div className="mb-8 flex flex-col sm:flex-row gap-4">
+        <div className="flex-1 relative group">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <svg className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -246,6 +286,39 @@ function Assets() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
+          )}
+        </div>
+        
+        {/* Column Settings */}
+        <div className="relative">
+          <button
+            onClick={() => setShowColumnSettings(!showColumnSettings)}
+            className="px-6 py-4 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-2xl hover:from-gray-700 hover:to-gray-800 shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 font-medium"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
+            </svg>
+            Columns
+          </button>
+          {showColumnSettings && (
+            <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl z-20 border border-gray-200 overflow-hidden">
+              <div className="py-2">
+                <div className="px-4 py-3 text-sm font-semibold text-gray-700 border-b bg-gray-50">Show/Hide Columns</div>
+                {Object.entries(visibleColumns).map(([column, visible]) => (
+                  <label key={column} className="flex items-center px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={visible}
+                      onChange={() => toggleColumn(column)}
+                      className="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <span className="text-sm font-medium capitalize text-gray-700">
+                      {column.replace('_', ' ').replace('serial', 'Serial Number')}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </div>
@@ -354,8 +427,9 @@ function Assets() {
                       onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
-                      <option value="active">Active</option>
+                      <option value="in_use">In Use</option>
                       <option value="inactive">Inactive</option>
+                      <option value="in_repair">In Repair</option>
                     </select>
                   </div>
                 </div>
@@ -386,30 +460,30 @@ function Assets() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              {visibleColumns.name && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>}
+              {visibleColumns.type && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>}
+              {visibleColumns.serial && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serial</th>}
+              {visibleColumns.location && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>}
+              {visibleColumns.assigned_to && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>}
+              {visibleColumns.status && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredAssets.map((asset) => (
               <tr key={asset.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{asset.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.type}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.serial_number}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.location || '-'}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.assigned_to || '-'}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    asset.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {asset.status}
-                  </span>
-                </td>
+                {visibleColumns.name && <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{asset.name}</td>}
+                {visibleColumns.type && <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.type}</td>}
+                {visibleColumns.serial && <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.serial_number}</td>}
+                {visibleColumns.location && <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.location || '-'}</td>}
+                {visibleColumns.assigned_to && <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{asset.assigned_to || '-'}</td>}
+                {visibleColumns.status && (
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(asset.status)}`}>
+                      {getStatusLabel(asset.status)}
+                    </span>
+                  </td>
+                )}
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                   <button
                     onClick={() => showQR(asset.id)}
@@ -445,10 +519,8 @@ function Assets() {
                 <h3 className="text-lg font-semibold text-gray-900">{asset.name}</h3>
                 <p className="text-sm text-gray-500">{asset.type}</p>
               </div>
-              <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                asset.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-              }`}>
-                {asset.status}
+              <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(asset.status)}`}>
+                {getStatusLabel(asset.status)}
               </span>
             </div>
             
@@ -587,8 +659,9 @@ function Assets() {
                       onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
-                      <option value="active">Active</option>
+                      <option value="in_use">In Use</option>
                       <option value="inactive">Inactive</option>
+                      <option value="in_repair">In Repair</option>
                     </select>
                   </div>
                 </div>

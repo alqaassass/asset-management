@@ -4,7 +4,7 @@ import api from '../api/axios';
 
 function Dashboard() {
   const [stats, setStats] = useState({
-    overview: { total: 0, active: 0, inactive: 0, recentlyAdded: 0 },
+    overview: { total: 0, in_use: 0, inactive: 0, in_repair: 0, recentlyAdded: 0 },
     typeDistribution: [],
     topEmployees: [],
     locationStats: [],
@@ -53,7 +53,7 @@ function Dashboard() {
       <h1 className="text-3xl font-bold text-gray-900 mb-8">IT Asset Management Dashboard</h1>
 
       {/* Overview Stats */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5 mb-8">
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
             <dt className="text-sm font-medium text-gray-500 truncate">Total Assets</dt>
@@ -64,9 +64,9 @@ function Dashboard() {
 
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-gray-500 truncate">Active Assets</dt>
-            <dd className="mt-1 text-3xl font-semibold text-green-600">{stats.overview.active}</dd>
-            <div className="mt-2 text-sm text-green-600">Currently in use</div>
+            <dt className="text-sm font-medium text-gray-500 truncate">In Use</dt>
+            <dd className="mt-1 text-3xl font-semibold text-green-600">{stats.overview.in_use}</dd>
+            <div className="mt-2 text-sm text-green-600">Currently active</div>
           </div>
         </div>
 
@@ -75,6 +75,14 @@ function Dashboard() {
             <dt className="text-sm font-medium text-gray-500 truncate">Inactive Assets</dt>
             <dd className="mt-1 text-3xl font-semibold text-red-600">{stats.overview.inactive}</dd>
             <div className="mt-2 text-sm text-red-600">Not in use</div>
+          </div>
+        </div>
+
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="px-4 py-5 sm:p-6">
+            <dt className="text-sm font-medium text-gray-500 truncate">In Repair</dt>
+            <dd className="mt-1 text-3xl font-semibold text-yellow-600">{stats.overview.in_repair}</dd>
+            <div className="mt-2 text-sm text-yellow-600">Being repaired</div>
           </div>
         </div>
 
