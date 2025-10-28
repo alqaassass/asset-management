@@ -58,17 +58,17 @@ function QRScanner() {
 
   return (
     <div className="px-4 py-6 sm:px-0">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Scan QR Code</h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Scan QR Code</h1>
       
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md shadow-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700/50 transition-all duration-300">
         {!scanning ? (
           <div className="text-center">
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               Click the button below to start scanning QR codes
             </p>
             <button
               onClick={() => setScanning(true)}
-              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-300"
             >
               Start Scanner
             </button>
@@ -78,7 +78,7 @@ function QRScanner() {
             <div id="qr-reader" className="mb-4"></div>
             <button
               onClick={() => setScanning(false)}
-              className="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              className="w-full px-4 py-2 bg-red-600 dark:bg-red-500 text-white rounded-md hover:bg-red-700 dark:hover:bg-red-600 transition-colors duration-300"
             >
               Stop Scanner
             </button>
@@ -86,9 +86,9 @@ function QRScanner() {
         )}
       </div>
 
-      <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="text-sm font-semibold text-blue-900 mb-2">Instructions:</h3>
-        <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+      <div className="mt-6 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg p-4 transition-colors duration-300">
+        <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-2">Instructions:</h3>
+        <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
           <li>Click "Start Scanner" to activate your camera</li>
           <li>Point your camera at an asset QR code</li>
           <li>The scanner will automatically detect and open the asset details</li>
