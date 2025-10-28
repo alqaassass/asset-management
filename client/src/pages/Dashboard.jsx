@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
+import ChartsSection from '../components/ChartsSection';
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -86,6 +87,9 @@ function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* AI-Powered Charts Section */}
+      <ChartsSection />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Asset Types Distribution */}
