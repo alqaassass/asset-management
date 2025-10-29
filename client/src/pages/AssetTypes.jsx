@@ -114,18 +114,18 @@ function AssetTypes() {
             {/* Add Type Modal */}
             {showForm && (
                 <div
-                    className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fadeIn"
+                    className="fixed inset-0 bg-gray-600/50 dark:bg-gray-900/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn"
                     onClick={(e) => {
                         if (e.target === e.currentTarget) resetForm();
                     }}
                 >
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full animate-zoomIn">
-                        <div className="px-6 py-4 border-b border-gray-200">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full animate-zoomIn">
+                        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                             <div className="flex items-center justify-between">
-                                <h3 className="text-lg font-semibold text-gray-900">{editingType ? 'Edit Asset Type' : 'Add New Asset Type'}</h3>
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{editingType ? 'Edit Asset Type' : 'Add New Asset Type'}</h3>
                                 <button
                                     onClick={resetForm}
-                                    className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none"
                                 >
                                     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -137,8 +137,8 @@ function AssetTypes() {
                         <form onSubmit={handleSubmit} className="px-6 py-4">
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Type Name <span className="text-red-600">*</span>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Type Name <span className="text-red-600 dark:text-red-400">*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -146,22 +146,22 @@ function AssetTypes() {
                                         required
                                         value={formData.name}
                                         onChange={(e) => setFormData({ name: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     />
                                 </div>
                             </div>
 
-                            <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+                            <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
                                 <button
                                     type="button"
                                     onClick={resetForm}
-                                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                 >
                                     {editingType ? 'Update Type' : 'Add Type'}
                                 </button>

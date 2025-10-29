@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../api/axios';
 
 function Assets() {
@@ -11,6 +11,7 @@ function Assets() {
   const [assetTypes, setAssetTypes] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [showColumnSettings, setShowColumnSettings] = useState(false);
+  const columnSettingsRef = useRef(null);
   const [visibleColumns, setVisibleColumns] = useState({
     name: true,
     type: true,
@@ -42,6 +43,23 @@ function Assets() {
     fetchEmployees();
   }, []);
 
+  // Close column settings when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (columnSettingsRef.current && !columnSettingsRef.current.contains(event.target)) {
+        setShowColumnSettings(false);
+      }
+    };
+
+    if (showColumnSettings) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showColumnSettings]);
+
   const fetchAssets = async () => {
     try {
       console.log('Fetching assets...');
@@ -52,6 +70,11 @@ function Assets() {
     } catch (error) {
       console.error('Error fetching assets:', error);
       console.error('Error details:', error.response?.data);
+      if (error.response?.status === 401) {
+        alert('Session expired. Please log in again.');
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
     }
   };
 
@@ -237,7 +260,7 @@ function Assets() {
         </div>
 
         {/* Column Settings */}
-        <div className="relative">
+        <div className="relative" ref={columnSettingsRef}>
           <button
             onClick={() => setShowColumnSettings(!showColumnSettings)}
             className="px-6 py-4 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-2xl hover:from-gray-700 hover:to-gray-800 shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 font-medium"
@@ -248,19 +271,19 @@ function Assets() {
             Columns
           </button>
           {showColumnSettings && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl z-20 border border-gray-200 overflow-hidden">
+            <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl z-20 border border-gray-200 dark:border-gray-700 overflow-hidden">
               <div className="py-2">
-                <div className="px-4 py-3 text-sm font-semibold text-gray-700 border-b bg-gray-50">Show/Hide Columns</div>
+                <div className="px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">Show/Hide Columns</div>
                 {Object.entries(visibleColumns).map(([column, visible]) => (
-                  <label key={column} className="flex items-center px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors">
+                  <label key={column} className="flex items-center px-4 py-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 cursor-pointer transition-colors">
                     <input
                       type="checkbox"
                       checked={visible}
                       onChange={() => toggleColumn(column)}
                       disabled={column === "name"}
-                      className="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      className="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded"
                     />
-                    <span className="text-sm font-medium capitalize text-gray-700">
+                    <span className="text-sm font-medium capitalize text-gray-700 dark:text-gray-300">
                       {column === 'serial_number' ? 'Serial Number' : column === 'assigned_to' ? 'Assigned To' : column.replace('_', ' ')}
                     </span>
                   </label>
@@ -340,7 +363,7 @@ function Assets() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Location
                     </label>
                     <input
@@ -348,17 +371,17 @@ function Assets() {
                       placeholder="Location"
                       value={formData.location}
                       onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Assigned To
                     </label>
                     <select
                       value={formData.assigned_to}
                       onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="">Select Employee (Optional)</option>
                       {employees.map((employee) => (
@@ -367,13 +390,13 @@ function Assets() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Status
                     </label>
                     <select
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="in use">In Use</option>
                       <option value="available">Available</option>
