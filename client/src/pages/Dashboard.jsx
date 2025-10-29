@@ -67,26 +67,25 @@ function Dashboard() {
         <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md overflow-hidden shadow-xl rounded-2xl border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
           <div className="px-4 py-5 sm:p-6">
 
-            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Active Assets</dt>
-            <dd className="mt-1 text-3xl font-semibold text-green-600 dark:text-green-400">{stats.overview.active}</dd>
-            <div className="mt-2 text-sm text-green-600 dark:text-green-400">Currently in use</div>
+            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">In Use</dt>
+            <dd className="mt-1 text-3xl font-semibold text-red-600 dark:text-red-400">{stats.overview.inUse || 0}</dd>
+            <div className="mt-2 text-sm text-red-600 dark:text-red-400">Currently deployed</div>
           </div>
         </div>
 
         <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md overflow-hidden shadow-xl rounded-2xl border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
           <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Inactive Assets</dt>
-            <dd className="mt-1 text-3xl font-semibold text-red-600 dark:text-red-400">{stats.overview.inactive}</dd>
-            <div className="mt-2 text-sm text-red-600 dark:text-red-400">Not in use</div>
+            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">In Repair</dt>
+            <dd className="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">{stats.overview.inRepair || 0}</dd>
+            <div className="mt-2 text-sm text-blue-600 dark:text-blue-400">Under maintenance</div>
           </div>
         </div>
 
         <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md overflow-hidden shadow-xl rounded-2xl border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
           <div className="px-4 py-5 sm:p-6">
-
-            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Recently Added</dt>
-            <dd className="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">{stats.overview.recentlyAdded}</dd>
-            <div className="mt-2 text-sm text-blue-600 dark:text-blue-400">Last 30 days</div>
+            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Available</dt>
+            <dd className="mt-1 text-3xl font-semibold text-green-600 dark:text-green-400">{stats.overview.available || 0}</dd>
+            <div className="mt-2 text-sm text-green-600 dark:text-green-400">Ready to deploy</div>
           </div>
         </div>
       </div>
@@ -199,7 +198,10 @@ function Dashboard() {
               {stats.statusBreakdown.map((status, index) => (
                 <div key={status.status} className="flex justify-between items-center">
                   <span className="text-sm text-gray-600 dark:text-gray-400 capitalize">{status.status}</span>
-                  <span className={`text-sm font-semibold ${status.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <span className={`text-sm font-semibold ${status.status === 'in use' ? 'text-red-600 dark:text-red-400' :
+                    status.status === 'in repair' ? 'text-blue-600 dark:text-blue-400' :
+                      'text-green-600 dark:text-green-400'
+                    }`}>
                     {status.count}
                   </span>
                 </div>

@@ -68,7 +68,9 @@ function AssetDetail() {
                 <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Status</dt>
                 <dd className="mt-1">
                   <span className={`px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full ${
-                    asset.status === 'active' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+                    asset.status === 'in use' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' : 
+                    asset.status === 'in repair' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' : 
+                    'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
                   }`}>
                     {asset.status}
                   </span>

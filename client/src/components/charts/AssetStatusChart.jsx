@@ -4,9 +4,9 @@ function AssetStatusChart({ data, insight }) {
   const isDark = document.documentElement.classList.contains('dark');
 
   const COLORS = {
-    active: isDark ? '#34D399' : '#10B981',
-    inactive: isDark ? '#F87171' : '#EF4444',
-    maintenance: isDark ? '#FBBF24' : '#F59E0B'
+    'in use': isDark ? '#F87171' : '#EF4444',
+    'in repair': isDark ? '#60A5FA' : '#3B82F6',
+    'available': isDark ? '#34D399' : '#10B981'
   };
 
   const chartData = data.map(item => ({

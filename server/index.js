@@ -231,9 +231,9 @@ app.get('/api/dashboard/stats', async (req, res) => {
     
     // Basic counts
     const totalResult = await pool.query('SELECT COUNT(*) FROM assets');
-    const inUseResult = await pool.query("SELECT COUNT(*) FROM assets WHERE status = 'in_use'");
-    const inactiveResult = await pool.query("SELECT COUNT(*) FROM assets WHERE status = 'inactive'");
-    const inRepairResult = await pool.query("SELECT COUNT(*) FROM assets WHERE status = 'in_repair'");
+    const inUseResult = await pool.query("SELECT COUNT(*) FROM assets WHERE status = 'in use'");
+    const availableResult = await pool.query("SELECT COUNT(*) FROM assets WHERE status = 'available'");
+    const inRepairResult = await pool.query("SELECT COUNT(*) FROM assets WHERE status = 'in repair'");
     
     // Asset types distribution
     const typeDistribution = await pool.query(`
@@ -281,9 +281,9 @@ app.get('/api/dashboard/stats', async (req, res) => {
     res.json({
       overview: {
         total: parseInt(totalResult.rows[0].count),
-        in_use: parseInt(inUseResult.rows[0].count),
-        inactive: parseInt(inactiveResult.rows[0].count),
-        in_repair: parseInt(inRepairResult.rows[0].count),
+        inUse: parseInt(inUseResult.rows[0].count),
+        available: parseInt(availableResult.rows[0].count),
+        inRepair: parseInt(inRepairResult.rows[0].count),
         recentlyAdded: parseInt(recentAssets.rows[0].count)
       },
       typeDistribution: typeDistribution.rows.map(row => ({

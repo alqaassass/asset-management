@@ -11,7 +11,6 @@ import Vendors from './pages/Vendors';
 import Layout from './components/Layout';
 import InteractiveBackground from './components/InteractiveBackground';
 import NotificationPopup from './components/NotificationPopup';
-import NewsTicker from './components/NewsTicker';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -37,9 +36,6 @@ function App() {
       
       {/* Notification System */}
       {isAuthenticated && <NotificationPopup />}
-      
-      {/* News Ticker */}
-      {isAuthenticated && <NewsTicker />}
       
       <Routes>
         <Route path="/login" element={

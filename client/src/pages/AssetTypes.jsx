@@ -5,6 +5,7 @@ function AssetTypes() {
     const [types, setTypes] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [showForm, setShowForm] = useState(false);
+    const [editingType, setEditingType] = useState(null);
     const [formData, setFormData] = useState({ name: '' });
 
     useEffect(() => {
@@ -23,13 +24,22 @@ function AssetTypes() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/asset-types', formData);
+            if (editingType) {
+                await api.put(`/asset-types/${editingType.id}`, formData);
+            } else {
+                await api.post('/asset-types', formData);
+            }
             fetchTypes();
-            setFormData({ name: '' });
-            setShowForm(false);
+            resetForm();
         } catch (error) {
-            alert(error.response?.data?.error || 'Error adding type');
+            alert(error.response?.data?.error || 'Error saving type');
         }
+    };
+
+    const handleEdit = (type) => {
+        setEditingType(type);
+        setFormData({ name: type.name });
+        setShowForm(true);
     };
 
     const handleDelete = async (id) => {
@@ -45,6 +55,7 @@ function AssetTypes() {
 
     const resetForm = () => {
         setFormData({ name: '' });
+        setEditingType(null);
         setShowForm(false);
     };
 
@@ -111,7 +122,7 @@ function AssetTypes() {
                     <div className="bg-white rounded-lg shadow-xl max-w-md w-full animate-zoomIn">
                         <div className="px-6 py-4 border-b border-gray-200">
                             <div className="flex items-center justify-between">
-                                <h3 className="text-lg font-semibold text-gray-900">Add New Asset Type</h3>
+                                <h3 className="text-lg font-semibold text-gray-900">{editingType ? 'Edit Asset Type' : 'Add New Asset Type'}</h3>
                                 <button
                                     onClick={resetForm}
                                     className="text-gray-400 hover:text-gray-600 focus:outline-none"
@@ -152,7 +163,7 @@ function AssetTypes() {
                                     type="submit"
                                     className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                 >
-                                    Add Type
+                                    {editingType ? 'Update Type' : 'Add Type'}
                                 </button>
                             </div>
                         </form>
@@ -173,7 +184,13 @@ function AssetTypes() {
                             {filteredTypes.map((type) => (
                                 <tr key={type.id}>
                                     <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{type.name}</td>
-                                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
+                                        <button
+                                            onClick={() => handleEdit(type)}
+                                            className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                                        >
+                                            Edit
+                                        </button>
                                         <button
                                             onClick={() => handleDelete(type.id)}
                                             className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
