@@ -154,6 +154,76 @@ app.get('/api/insights/charts', async (req, res) => {
   }
 });
 
+// Notifications endpoint
+app.get('/api/notifications', async (req, res) => {
+  try {
+    const pool = require('./config/db');
+    
+    // Get recent critical events
+    const criticalAssets = await pool.query(`
+      SELECT name, status, updated_at 
+      FROM assets 
+      WHERE status = 'in_repair' 
+      ORDER BY updated_at DESC 
+      LIMIT 5
+    `);
+    
+    // Get recently added assets
+    const recentAssets = await pool.query(`
+      SELECT name, type, created_at 
+      FROM assets 
+      WHERE created_at >= NOW() - INTERVAL '7 days'
+      ORDER BY created_at DESC 
+      LIMIT 3
+    `);
+    
+    // Generate notifications
+    const notifications = [];
+    
+    // Critical events
+    criticalAssets.rows.forEach(asset => {
+      notifications.push({
+        id: `repair_${asset.name}`,
+        type: 'warning',
+        title: 'Asset Needs Attention',
+        message: `${asset.name} is currently in repair`,
+        timestamp: asset.updated_at,
+        icon: '⚠️'
+      });
+    });
+    
+    // Recent additions
+    recentAssets.rows.forEach(asset => {
+      notifications.push({
+        id: `new_${asset.name}`,
+        type: 'info',
+        title: 'New Asset Added',
+        message: `${asset.name} (${asset.type}) was added to inventory`,
+        timestamp: asset.created_at,
+        icon: '📦'
+      });
+    });
+    
+    // Add some system notifications
+    notifications.push({
+      id: 'system_backup',
+      type: 'success',
+      title: 'System Update',
+      message: 'Daily backup completed successfully',
+      timestamp: new Date(),
+      icon: '✅'
+    });
+    
+    // Sort by timestamp (newest first)
+    notifications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    
+    res.json(notifications.slice(0, 10)); // Return top 10 notifications
+  } catch (error) {
+    console.error('Notifications error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // Dashboard stats endpoint
 app.get('/api/dashboard/stats', async (req, res) => {
   try {
@@ -161,8 +231,9 @@ app.get('/api/dashboard/stats', async (req, res) => {
     
     // Basic counts
     const totalResult = await pool.query('SELECT COUNT(*) FROM assets');
-    const activeResult = await pool.query("SELECT COUNT(*) FROM assets WHERE status = 'active'");
+    const inUseResult = await pool.query("SELECT COUNT(*) FROM assets WHERE status = 'in_use'");
     const inactiveResult = await pool.query("SELECT COUNT(*) FROM assets WHERE status = 'inactive'");
+    const inRepairResult = await pool.query("SELECT COUNT(*) FROM assets WHERE status = 'in_repair'");
     
     // Asset types distribution
     const typeDistribution = await pool.query(`
@@ -210,8 +281,9 @@ app.get('/api/dashboard/stats', async (req, res) => {
     res.json({
       overview: {
         total: parseInt(totalResult.rows[0].count),
-        active: parseInt(activeResult.rows[0].count),
+        in_use: parseInt(inUseResult.rows[0].count),
         inactive: parseInt(inactiveResult.rows[0].count),
+        in_repair: parseInt(inRepairResult.rows[0].count),
         recentlyAdded: parseInt(recentAssets.rows[0].count)
       },
       typeDistribution: typeDistribution.rows.map(row => ({

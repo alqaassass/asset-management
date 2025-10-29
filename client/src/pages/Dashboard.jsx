@@ -5,7 +5,7 @@ import ChartsSection from '../components/ChartsSection';
 
 function Dashboard() {
   const [stats, setStats] = useState({
-    overview: { total: 0, active: 0, inactive: 0, recentlyAdded: 0 },
+    overview: { total: 0, in_use: 0, inactive: 0, in_repair: 0, recentlyAdded: 0 },
     typeDistribution: [],
     topEmployees: [],
     locationStats: [],
@@ -54,6 +54,7 @@ function Dashboard() {
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">IT Asset Management Dashboard</h1>
 
       {/* Overview Stats */}
+
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
         <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md overflow-hidden shadow-xl rounded-2xl border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
           <div className="px-4 py-5 sm:p-6">
@@ -65,6 +66,7 @@ function Dashboard() {
 
         <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md overflow-hidden shadow-xl rounded-2xl border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
           <div className="px-4 py-5 sm:p-6">
+
             <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Active Assets</dt>
             <dd className="mt-1 text-3xl font-semibold text-green-600 dark:text-green-400">{stats.overview.active}</dd>
             <div className="mt-2 text-sm text-green-600 dark:text-green-400">Currently in use</div>
@@ -81,6 +83,7 @@ function Dashboard() {
 
         <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md overflow-hidden shadow-xl rounded-2xl border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
           <div className="px-4 py-5 sm:p-6">
+
             <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Recently Added</dt>
             <dd className="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">{stats.overview.recentlyAdded}</dd>
             <div className="mt-2 text-sm text-blue-600 dark:text-blue-400">Last 30 days</div>
