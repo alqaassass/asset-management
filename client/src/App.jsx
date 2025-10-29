@@ -7,6 +7,7 @@ import AssetDetail from './pages/AssetDetail';
 import QRScanner from './pages/QRScanner';
 import AssetTypes from './pages/AssetTypes';
 import Employees from './pages/Employees';
+import Vendors from './pages/Vendors';
 import Layout from './components/Layout';
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
           <Route path="scan" element={<QRScanner />} />
           <Route path="asset-types" element={<AssetTypes />} />
           <Route path="employees" element={<Employees />} />
+          <Route path="vendors" element={<Vendors />} />
         </Route>
       </Routes>
     </Router>

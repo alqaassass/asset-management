@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const assetRoutes = require('./routes/assets');
 const assetTypesRoutes = require('./routes/assetTypes');
 const employeesRoutes = require('./routes/employees');
+const vendorsRoutes = require('./routes/vendors');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/assets', assetRoutes);
 app.use('/api/asset-types', assetTypesRoutes);
 app.use('/api/employees', employeesRoutes);
+app.use('/api/vendors', vendorsRoutes);
 
 // Charts data endpoint with AI insights
 app.get('/api/insights/charts', async (req, res) => {

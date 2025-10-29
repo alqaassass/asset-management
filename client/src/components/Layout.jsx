@@ -77,6 +77,16 @@ function Layout({ onLogout }) {
                 >
                   Users
                 </Link>
+                <Link
+                  to="/vendors"
+                  className={`${
+                    isActive('/vendors')
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-blue-500/10 dark:bg-blue-500/20 backdrop-blur-sm'
+                      : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-500/10 dark:hover:bg-gray-700/30'
+                  } inline-flex items-center px-3 pt-1 border-b-2 text-xs lg:text-sm font-medium transition-all duration-200 rounded-t-lg`}
+                >
+                  Vendors
+                </Link>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -158,6 +168,17 @@ function Layout({ onLogout }) {
                 } block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-all duration-200`}
               >
                 Employees
+              </Link>
+              <Link
+                to="/vendors"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`${
+                  isActive('/vendors')
+                    ? 'bg-blue-500/10 dark:bg-blue-500/20 border-blue-500 text-blue-700 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-500/10 dark:hover:bg-gray-700/30 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-300'
+                } block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-all duration-200`}
+              >
+                Vendors
               </Link>
               <button
                 onClick={() => {
