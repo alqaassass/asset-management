@@ -10,7 +10,6 @@ function Assets() {
   const [qrCode, setQrCode] = useState(null);
   const [assetTypes, setAssetTypes] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [alert, setAlert] = useState({ show: false, message: '', type: '' });
   const [showColumnSettings, setShowColumnSettings] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState({
     name: true,
@@ -45,10 +44,14 @@ function Assets() {
 
   const fetchAssets = async () => {
     try {
+      console.log('Fetching assets...');
       const response = await api.get('/assets');
+      console.log('Assets response:', response.data);
+      console.log('Number of assets:', response.data.length);
       setAssets(response.data);
     } catch (error) {
       console.error('Error fetching assets:', error);
+      console.error('Error details:', error.response?.data);
     }
   };
 
@@ -70,12 +73,7 @@ function Assets() {
     }
   };
 
-  const showAlert = (message, type = 'success') => {
-    setAlert({ show: true, message, type });
-    setTimeout(() => {
-      setAlert({ show: false, message: '', type: '' });
-    }, 5000);
-  };
+
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -124,9 +122,8 @@ function Assets() {
       await api.post('/assets', formData);
       fetchAssets();
       resetForm();
-      showAlert('Asset created successfully!', 'success');
     } catch (error) {
-      showAlert(error.response?.data?.error || 'Error creating asset', 'error');
+      console.error('Error creating asset:', error);
     }
   };
 
@@ -137,9 +134,8 @@ function Assets() {
       fetchAssets();
       setShowEditModal(false);
       setEditingAsset(null);
-      showAlert('Asset updated successfully!', 'success');
     } catch (error) {
-      showAlert(error.response?.data?.error || 'Error updating asset', 'error');
+      console.error('Error updating asset:', error);
     }
   };
 
@@ -148,9 +144,8 @@ function Assets() {
       try {
         await api.delete(`/assets/${id}`);
         fetchAssets();
-        showAlert('Asset deleted successfully!', 'success');
       } catch (error) {
-        showAlert('Error deleting asset', 'error');
+        console.error('Error deleting asset:', error);
       }
     }
   };
@@ -206,46 +201,6 @@ function Assets() {
 
   return (
     <div>
-      {/* Success/Error Alert */}
-      {alert.show && (
-        <div className={`mb-6 p-4 rounded-md ${
-          alert.type === 'success' 
-            ? 'bg-green-50 border border-green-200 text-green-800' 
-            : 'bg-red-50 border border-red-200 text-red-800'
-        }`}>
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              {alert.type === 'success' ? (
-                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-              ) : (
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-            <div className="ml-3">
-              <p className="text-sm font-medium">{alert.message}</p>
-            </div>
-            <div className="ml-auto pl-3">
-              <button
-                onClick={() => setAlert({ show: false, message: '', type: '' })}
-                className={`inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                  alert.type === 'success'
-                    ? 'text-green-500 hover:bg-green-100 focus:ring-green-600'
-                    : 'text-red-500 hover:bg-red-100 focus:ring-red-600'
-                }`}
-              >
-                <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-900 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent mb-2">Assets</h1>

@@ -89,13 +89,23 @@ app.get('/api/insights/charts', async (req, res) => {
     }
     
     // Status insight
-    const activeCount = statusResult.rows.find(r => r.status === 'active')?.count || 0;
-    const activePercent = ((activeCount / totalAssets) * 100).toFixed(0);
-    let statusInsight = `${activePercent}% of assets are currently active.`;
-    if (activePercent < 70) {
-      statusInsight = `⚠️ Only ${activePercent}% of assets are active. Consider reviewing inactive assets for reallocation or disposal.`;
-    } else if (activePercent > 90) {
-      statusInsight = `✅ Excellent! ${activePercent}% of assets are actively deployed and in use.`;
+    const inUseCount = statusResult.rows.find(r => r.status === 'in_use')?.count || 0;
+    const inactiveCount = statusResult.rows.find(r => r.status === 'inactive')?.count || 0;
+    const inRepairCount = statusResult.rows.find(r => r.status === 'in_repair')?.count || 0;
+    const inUsePercent = ((inUseCount / totalAssets) * 100).toFixed(1);
+    const inRepairPercent = ((inRepairCount / totalAssets) * 100).toFixed(1);
+    
+    let statusInsight = '';
+    if (inRepairCount > 0 && inRepairPercent > 10) {
+      statusInsight = `⚠️ ${inRepairCount} assets (${inRepairPercent}%) are in repair. High maintenance rate detected - consider reviewing asset quality or usage patterns.`;
+    } else if (inRepairCount > 0) {
+      statusInsight = `🔧 ${inRepairCount} asset${inRepairCount > 1 ? 's are' : ' is'} currently in repair (${inRepairPercent}%). Normal maintenance level.`;
+    } else if (inUsePercent > 90) {
+      statusInsight = `✅ Excellent! ${inUsePercent}% of assets (${inUseCount} items) are actively in use. High utilization rate.`;
+    } else if (inactiveCount > totalAssets * 0.2) {
+      statusInsight = `💡 ${inactiveCount} assets (${((inactiveCount/totalAssets)*100).toFixed(1)}%) are inactive. Consider reassigning or retiring unused assets.`;
+    } else {
+      statusInsight = `✅ ${inUseCount} assets in use, ${inactiveCount} inactive, ${inRepairCount} in repair. Healthy asset distribution.`;
     }
     
     // Type insight
@@ -108,12 +118,19 @@ app.get('/api/insights/charts', async (req, res) => {
     
     // Assignment insight
     const unassignedCount = assignmentResult.rows.find(r => r.category === 'Unassigned')?.count || 0;
+    const assignedCount = totalAssets - unassignedCount;
+    const assignedPercent = ((assignedCount / totalAssets) * 100).toFixed(0);
     const unassignedPercent = ((unassignedCount / totalAssets) * 100).toFixed(0);
-    let assignmentInsight = `${unassignedPercent}% of assets are currently unassigned.`;
-    if (unassignedPercent > 20) {
-      assignmentInsight = `💡 ${unassignedPercent}% of assets (${unassignedCount} items) are unassigned. Consider reallocating these resources to improve utilization.`;
-    } else if (unassignedPercent < 5) {
-      assignmentInsight = `✅ Great asset utilization! Only ${unassignedPercent}% of assets are unassigned.`;
+    
+    let assignmentInsight = '';
+    if (unassignedCount === 0) {
+      assignmentInsight = `✅ Perfect! All ${totalAssets} assets are assigned to employees.`;
+    } else if (unassignedPercent > 30) {
+      assignmentInsight = `⚠️ ${unassignedCount} assets (${unassignedPercent}%) are unassigned. Consider assigning them to improve tracking and accountability.`;
+    } else if (unassignedPercent > 10) {
+      assignmentInsight = `💡 ${assignedCount} assets are assigned (${assignedPercent}%). ${unassignedCount} assets remain unassigned.`;
+    } else {
+      assignmentInsight = `✅ Excellent! ${assignedPercent}% of assets are assigned to employees. Only ${unassignedCount} unassigned.`;
     }
     
     res.json({
@@ -248,7 +265,9 @@ app.get('/api/dashboard/stats', async (req, res) => {
     const topEmployees = await pool.query(`
       SELECT assigned_to, COUNT(*) as asset_count 
       FROM assets 
-      WHERE assigned_to IS NOT NULL AND assigned_to != 'Shared Resource'
+      WHERE assigned_to IS NOT NULL 
+        AND assigned_to != '' 
+        AND assigned_to != 'Shared Resource'
       GROUP BY assigned_to 
       ORDER BY asset_count DESC 
       LIMIT 5
