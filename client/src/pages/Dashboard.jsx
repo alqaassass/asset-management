@@ -50,13 +50,15 @@ function Dashboard() {
   }
 
   return (
-    <div className="px-4 py-6 sm:px-0">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">IT Asset Management Dashboard</h1>
+    <div>
+      <div className="mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-900 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent mb-2">Dashboard</h1>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">Overview of your IT assets and analytics</p>
+      </div>
 
       {/* Overview Stats */}
-
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md overflow-hidden shadow-xl rounded-2xl border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm overflow-hidden shadow-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
           <div className="px-4 py-5 sm:p-6">
             <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Assets</dt>
             <dd className="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">{stats.overview.total}</dd>
@@ -64,16 +66,15 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md overflow-hidden shadow-xl rounded-2xl border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm overflow-hidden shadow-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
           <div className="px-4 py-5 sm:p-6">
-
             <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">In Use</dt>
             <dd className="mt-1 text-3xl font-semibold text-red-600 dark:text-red-400">{stats.overview.inUse || 0}</dd>
             <div className="mt-2 text-sm text-red-600 dark:text-red-400">Currently deployed</div>
           </div>
         </div>
 
-        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md overflow-hidden shadow-xl rounded-2xl border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm overflow-hidden shadow-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
           <div className="px-4 py-5 sm:p-6">
             <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">In Repair</dt>
             <dd className="mt-1 text-3xl font-semibold text-blue-600 dark:text-blue-400">{stats.overview.inRepair || 0}</dd>
@@ -81,7 +82,7 @@ function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md overflow-hidden shadow-xl rounded-2xl border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm overflow-hidden shadow-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl hover:scale-105">
           <div className="px-4 py-5 sm:p-6">
             <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Available</dt>
             <dd className="mt-1 text-3xl font-semibold text-green-600 dark:text-green-400">{stats.overview.available || 0}</dd>
@@ -95,8 +96,8 @@ function Dashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         {/* Asset Types Distribution */}
-        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md shadow-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Most Used Asset Types</h2>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-2xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">📊 Most Used Asset Types</h2>
           <div className="space-y-4">
             {stats.typeDistribution.map((item, index) => (
               <div key={item.type} className="flex items-center justify-between">
@@ -119,8 +120,8 @@ function Dashboard() {
         </div>
 
         {/* Top Employees */}
-        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md shadow-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Top Asset Holders</h2>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-2xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">👥 Top Asset Holders</h2>
           <div className="space-y-4">
             {stats.topEmployees.map((employee, index) => (
               <div key={employee.name} className="flex items-center justify-between">
@@ -165,26 +166,26 @@ function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md shadow-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-2xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">⚡ Quick Actions</h2>
           <div className="space-y-3">
             <Link
               to="/assets"
-              className="flex items-center justify-center w-full px-4 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+              className="flex items-center justify-center w-full px-4 py-3 border border-transparent rounded-xl shadow-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
             >
               <span className="mr-2">📦</span>
               Manage Assets
             </Link>
             <Link
               to="/scan"
-              className="flex items-center justify-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-center w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl shadow-md text-sm font-semibold text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200 transform hover:scale-105"
             >
               <span className="mr-2">📷</span>
               Scan QR Code
             </Link>
             <Link
               to="/asset-types"
-              className="flex items-center justify-center w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-center w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl shadow-md text-sm font-semibold text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200 transform hover:scale-105"
             >
               <span className="mr-2">🏷️</span>
               Manage Asset Types

@@ -15,11 +15,11 @@ function AssetStatusChart({ data, insight }) {
   }));
 
   return (
-    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md shadow-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl">
+    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-2xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
         📊 Asset Status Distribution
       </h3>
-      
+
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
@@ -37,7 +37,7 @@ function AssetStatusChart({ data, insight }) {
               <Cell key={`cell-${index}`} fill={entry.fill} />
             ))}
           </Pie>
-          <Tooltip 
+          <Tooltip
             contentStyle={{
               backgroundColor: isDark ? 'rgba(31, 41, 55, 0.95)' : 'rgba(255, 255, 255, 0.95)',
               border: `1px solid ${isDark ? '#374151' : '#E5E7EB'}`,
@@ -47,7 +47,7 @@ function AssetStatusChart({ data, insight }) {
           />
         </PieChart>
       </ResponsiveContainer>
-      
+
       {insight && (
         <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
           <p className="text-sm text-gray-700 dark:text-gray-300">{insight}</p>
