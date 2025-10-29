@@ -9,7 +9,6 @@ import AssetTypes from './pages/AssetTypes';
 import Employees from './pages/Employees';
 import Vendors from './pages/Vendors';
 import Layout from './components/Layout';
-import InteractiveBackground from './components/InteractiveBackground';
 import NotificationPopup from './components/NotificationPopup';
 
 function App() {
@@ -31,9 +30,6 @@ function App() {
 
   return (
     <Router>
-      {/* Interactive Background */}
-      {isAuthenticated && <InteractiveBackground />}
-      
       {/* Notification System */}
       {isAuthenticated && <NotificationPopup />}
       

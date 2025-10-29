@@ -14,7 +14,7 @@ function Assets() {
   const [visibleColumns, setVisibleColumns] = useState({
     name: true,
     type: true,
-    serial: true,
+    serial_number: true,
     location: true,
     assigned_to: true,
     status: true
@@ -77,28 +77,20 @@ function Assets() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'in_use':
-        return 'bg-green-100 text-green-800';
-      case 'inactive':
-        return 'bg-red-100 text-red-800';
-      case 'in_repair':
-        return 'bg-yellow-100 text-yellow-800';
+      case 'in use':
+        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
+      case 'available':
+        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
+      case 'in repair':
+        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300';
     }
   };
 
   const getStatusLabel = (status) => {
-    switch (status) {
-      case 'in_use':
-        return 'In Use';
-      case 'inactive':
-        return 'Inactive';
-      case 'in_repair':
-        return 'In Repair';
-      default:
-        return status;
-    }
+    // Status is already in the correct format from the database
+    return status;
   };
 
   const toggleColumn = (column) => {
@@ -243,7 +235,7 @@ function Assets() {
             </button>
           )}
         </div>
-        
+
         {/* Column Settings */}
         <div className="relative">
           <button
@@ -265,10 +257,11 @@ function Assets() {
                       type="checkbox"
                       checked={visible}
                       onChange={() => toggleColumn(column)}
+                      disabled={column === "name"}
                       className="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
                     <span className="text-sm font-medium capitalize text-gray-700">
-                      {column.replace('_', ' ').replace('serial', 'Serial Number')}
+                      {column === 'serial_number' ? 'Serial Number' : column === 'assigned_to' ? 'Assigned To' : column.replace('_', ' ')}
                     </span>
                   </label>
                 ))}
@@ -280,7 +273,7 @@ function Assets() {
 
       {/* Add Asset Modal */}
       {showForm && (
-        <div 
+        <div
           className="fixed inset-0 bg-gray-600/50 dark:bg-gray-900/70 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn"
           onClick={(e) => {
             if (e.target === e.currentTarget) resetForm();
@@ -300,7 +293,7 @@ function Assets() {
                 </button>
               </div>
             </div>
-            
+
             <form onSubmit={handleSubmit} className="px-6 py-4">
               <div className="space-y-4">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -389,7 +382,7 @@ function Assets() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
                 <button
                   type="button"
@@ -417,9 +410,9 @@ function Assets() {
             <tr>
               {visibleColumns.name && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>}
               {visibleColumns.type && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>}
-              {visibleColumns.serial && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Serial</th>}
+              {visibleColumns.serial_number && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Serial</th>}
               {visibleColumns.location && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Location</th>}
-              {visibleColumns.assignedTo && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Assigned To</th>}
+              {visibleColumns.assigned_to && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Assigned To</th>}
               {visibleColumns.status && <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
             </tr>
@@ -430,15 +423,14 @@ function Assets() {
 
                 {visibleColumns.name && <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{asset.name}</td>}
                 {visibleColumns.type && <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{asset.type}</td>}
-                {visibleColumns.serial && <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{asset.serial_number}</td>}
+                {visibleColumns.serial_number && <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{asset.serial_number}</td>}
                 {visibleColumns.location && <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{asset.location || '-'}</td>}
-                {visibleColumns.assignedTo && <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{asset.assigned_to || '-'}</td>}
+                {visibleColumns.assigned_to && <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{asset.assigned_to || '-'}</td>}
                 {visibleColumns.status && <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    asset.status === 'in use' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' : 
-                    asset.status === 'in repair' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' : 
-                    'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
-                  }`}>
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${asset.status === 'in use' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' :
+                      asset.status === 'in repair' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' :
+                        'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                    }`}>
                     {asset.status}
                   </span>
                 </td>}
@@ -481,7 +473,7 @@ function Assets() {
                 {getStatusLabel(asset.status)}
               </span>
             </div>
-            
+
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Serial:</span>
@@ -538,7 +530,7 @@ function Assets() {
                 </button>
               </div>
             </div>
-            
+
             <form onSubmit={handleEditSubmit} className="px-6 py-4">
               <div className="space-y-4">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -624,7 +616,7 @@ function Assets() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   type="button"

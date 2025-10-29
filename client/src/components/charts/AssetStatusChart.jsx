@@ -15,7 +15,7 @@ function AssetStatusChart({ data, insight }) {
   }));
 
   return (
-    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-2xl rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
+    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md shadow-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
         📊 Asset Status Distribution
       </h3>

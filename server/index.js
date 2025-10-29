@@ -68,69 +68,152 @@ app.get('/api/insights/charts', async (req, res) => {
       GROUP BY category
     `);
     
+    // Helper function to randomly select insight
+    const randomChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    
     // Generate AI insights
     const trendData = trendResult.rows.map(row => ({
       month: row.month,
       count: parseInt(row.count)
     }));
     
-    // Trend insight
-    let trendInsight = 'Asset acquisition is steady.';
+    // Calculate trend statistics
+    const totalAcquired = trendData.reduce((sum, d) => sum + d.count, 0);
+    const avgPerMonth = (totalAcquired / trendData.length).toFixed(1);
+    const maxMonth = trendData.reduce((max, d) => d.count > max.count ? d : max, trendData[0]);
+    const minMonth = trendData.reduce((min, d) => d.count < min.count ? d : min, trendData[0]);
+    
+    // Generate diverse trend insights
+    const trendInsights = [
+      `📊 You've acquired ${totalAcquired} assets over the past ${trendData.length} months. Average: ${avgPerMonth} per month.`,
+      `📈 Peak acquisition was in ${maxMonth.month} with ${maxMonth.count} assets. Plan for similar capacity needs.`,
+      `💡 Your slowest month was ${minMonth.month} (${minMonth.count} assets). Consider seasonal patterns in procurement.`,
+      `📊 Asset acquisition averages ${avgPerMonth} per month. Budget accordingly for consistent growth.`,
+      `🎯 Highest acquisition: ${maxMonth.count} assets in ${maxMonth.month}. Lowest: ${minMonth.count} in ${minMonth.month}.`
+    ];
+    
+    let trendInsight = randomChoice(trendInsights);
+    
+    // Add recent change insight if applicable
     if (trendData.length >= 2) {
       const recent = trendData[trendData.length - 1].count;
       const previous = trendData[trendData.length - 2].count;
       const change = ((recent - previous) / previous * 100).toFixed(0);
       
       if (Math.abs(change) > 30) {
-        trendInsight = `📈 Asset acquisition ${change > 0 ? 'increased' : 'decreased'} by ${Math.abs(change)}% this month. ${change > 0 ? 'Consider reviewing budget allocation.' : 'Acquisition rate has slowed significantly.'}`;
-      } else if (Math.abs(change) > 10) {
-        trendInsight = `Asset acquisition ${change > 0 ? 'grew' : 'declined'} by ${Math.abs(change)}% compared to last month.`;
+        const recentChangeInsights = [
+          `📈 Recent surge: ${Math.abs(change)}% ${change > 0 ? 'increase' : 'decrease'} this month. ${change > 0 ? 'Ensure adequate tracking resources.' : 'Investigate if this slowdown is intentional.'}`,
+          `⚠️ Significant ${change > 0 ? 'spike' : 'drop'} detected: ${Math.abs(change)}% change from last month. Review procurement strategy.`,
+          `🚨 ${Math.abs(change)}% ${change > 0 ? 'jump' : 'decline'} in acquisitions. ${change > 0 ? 'Prepare for increased management overhead.' : 'Consider if this aligns with business goals.'}`
+        ];
+        trendInsight = randomChoice(recentChangeInsights);
       }
     }
     
-    // Status insight
-    const inUseCount = statusResult.rows.find(r => r.status === 'in_use')?.count || 0;
-    const inactiveCount = statusResult.rows.find(r => r.status === 'inactive')?.count || 0;
-    const inRepairCount = statusResult.rows.find(r => r.status === 'in_repair')?.count || 0;
+    // Status insight with diverse information
+    const inUseCount = statusResult.rows.find(r => r.status === 'in use')?.count || 0;
+    const availableCount = statusResult.rows.find(r => r.status === 'available')?.count || 0;
+    const inRepairCount = statusResult.rows.find(r => r.status === 'in repair')?.count || 0;
     const inUsePercent = ((inUseCount / totalAssets) * 100).toFixed(1);
+    const availablePercent = ((availableCount / totalAssets) * 100).toFixed(1);
     const inRepairPercent = ((inRepairCount / totalAssets) * 100).toFixed(1);
+    const utilizationRate = ((inUseCount / (inUseCount + availableCount)) * 100).toFixed(1);
     
-    let statusInsight = '';
+    // Generate diverse status insights
+    const statusInsights = [
+      `✅ ${inUseCount} assets in use, ${availableCount} available, ${inRepairCount} in repair. Healthy distribution.`,
+      `📊 Utilization rate: ${utilizationRate}% (${inUseCount} deployed out of ${inUseCount + availableCount} operational assets).`,
+      `💡 ${availableCount} assets ready for deployment. That's ${availablePercent}% of your inventory available on demand.`,
+      `🔧 Maintenance impact: ${inRepairPercent}% of assets are being serviced. ${inRepairCount > 0 ? 'Plan for temporary capacity reduction.' : 'All assets operational!'}`,
+      `🎯 ${inUsePercent}% active deployment rate. ${availableCount} assets in reserve for future needs.`,
+      `📈 Asset health: ${((inUseCount + availableCount) / totalAssets * 100).toFixed(1)}% operational, ${inRepairPercent}% under maintenance.`
+    ];
+    
+    let statusInsight = randomChoice(statusInsights);
+    
+    // Override with critical insights
     if (inRepairCount > 0 && inRepairPercent > 10) {
-      statusInsight = `⚠️ ${inRepairCount} assets (${inRepairPercent}%) are in repair. High maintenance rate detected - consider reviewing asset quality or usage patterns.`;
-    } else if (inRepairCount > 0) {
-      statusInsight = `🔧 ${inRepairCount} asset${inRepairCount > 1 ? 's are' : ' is'} currently in repair (${inRepairPercent}%). Normal maintenance level.`;
-    } else if (inUsePercent > 90) {
-      statusInsight = `✅ Excellent! ${inUsePercent}% of assets (${inUseCount} items) are actively in use. High utilization rate.`;
-    } else if (inactiveCount > totalAssets * 0.2) {
-      statusInsight = `💡 ${inactiveCount} assets (${((inactiveCount/totalAssets)*100).toFixed(1)}%) are inactive. Consider reassigning or retiring unused assets.`;
-    } else {
-      statusInsight = `✅ ${inUseCount} assets in use, ${inactiveCount} inactive, ${inRepairCount} in repair. Healthy asset distribution.`;
+      const criticalInsights = [
+        `⚠️ High maintenance alert: ${inRepairCount} assets (${inRepairPercent}%) need repair. Review asset quality and usage patterns.`,
+        `🔧 ${inRepairPercent}% maintenance rate is elevated. Consider preventive maintenance program to reduce downtime.`,
+        `⚠️ ${inRepairCount} assets under repair. This impacts ${inRepairPercent}% of capacity - plan for replacements.`
+      ];
+      statusInsight = randomChoice(criticalInsights);
+    } else if (availableCount > totalAssets * 0.3) {
+      const underutilizedInsights = [
+        `💡 ${availableCount} assets (${availablePercent}%) are idle. Potential cost savings through reallocation or disposal.`,
+        `📦 Over 30% of assets are unused. Consider: 1) Reassigning to new employees, 2) Retiring old equipment.`,
+        `⚠️ Low utilization detected: ${utilizationRate}% usage rate. ${availableCount} assets could be better deployed.`
+      ];
+      statusInsight = randomChoice(underutilizedInsights);
     }
     
-    // Type insight
+    // Type insight with diverse information
     const topType = typeResult.rows[0];
+    const secondType = typeResult.rows[1];
+    const thirdType = typeResult.rows[2];
     const topTypePercent = ((topType.count / totalAssets) * 100).toFixed(0);
-    let typeInsight = `${topType.type} is the most common asset type (${topTypePercent}%).`;
+    const typeCount = typeResult.rows.length;
+    const top3Count = (topType.count + (secondType?.count || 0) + (thirdType?.count || 0));
+    const top3Percent = ((top3Count / totalAssets) * 100).toFixed(0);
+    
+    // Generate diverse type insights
+    const typeInsights = [
+      `📊 You manage ${typeCount} different asset types. Top category: ${topType.type} (${topTypePercent}%).`,
+      `💼 Asset diversity: ${typeCount} types tracked. ${topType.type} leads with ${topType.count} items.`,
+      `📈 Top 3 categories (${topType.type}, ${secondType?.type || 'N/A'}, ${thirdType?.type || 'N/A'}) represent ${top3Percent}% of inventory.`,
+      `🎯 ${topType.type} is your primary asset type with ${topType.count} units (${topTypePercent}% of total).`,
+      `📊 Asset portfolio: ${typeCount} categories managed. Largest: ${topType.type} (${topTypePercent}%), smallest: ${typeResult.rows[typeResult.rows.length-1].type}.`
+    ];
+    
+    let typeInsight = randomChoice(typeInsights);
+    
+    // Override for concentration risk
     if (topTypePercent > 40) {
-      typeInsight = `⚠️ ${topType.type} assets dominate your inventory at ${topTypePercent}%. Consider diversifying asset types for better flexibility.`;
+      const concentrationInsights = [
+        `⚠️ Portfolio risk: ${topType.type} dominates at ${topTypePercent}%. Diversification recommended for resilience.`,
+        `📊 Heavy concentration in ${topType.type} (${topTypePercent}%). Consider expanding into other asset categories.`,
+        `💡 ${topTypePercent}% of assets are ${topType.type}. Diversifying could reduce operational risk and increase flexibility.`
+      ];
+      typeInsight = randomChoice(concentrationInsights);
     }
     
-    // Assignment insight
+    // Assignment insight with diverse information
     const unassignedCount = assignmentResult.rows.find(r => r.category === 'Unassigned')?.count || 0;
-    const assignedCount = totalAssets - unassignedCount;
+    const sharedCount = assignmentResult.rows.find(r => r.category === 'Shared')?.count || 0;
+    const assignedCount = assignmentResult.rows.find(r => r.category === 'Assigned')?.count || 0;
     const assignedPercent = ((assignedCount / totalAssets) * 100).toFixed(0);
     const unassignedPercent = ((unassignedCount / totalAssets) * 100).toFixed(0);
+    const sharedPercent = ((sharedCount / totalAssets) * 100).toFixed(0);
+    const accountabilityRate = (((assignedCount + sharedCount) / totalAssets) * 100).toFixed(0);
     
-    let assignmentInsight = '';
+    // Generate diverse assignment insights
+    const assignmentInsights = [
+      `👥 ${assignedCount} assets individually assigned, ${sharedCount} shared resources, ${unassignedCount} unassigned.`,
+      `📊 Accountability rate: ${accountabilityRate}% of assets have clear ownership (assigned or shared).`,
+      `💼 Assignment breakdown: ${assignedPercent}% individual, ${sharedPercent}% shared, ${unassignedPercent}% unassigned.`,
+      `🎯 ${assignedCount} assets have individual owners. ${sharedCount} are shared resources across teams.`,
+      `📈 ${unassignedCount} assets awaiting assignment. ${assignedCount + sharedCount} already have clear ownership.`,
+      `✅ ${accountabilityRate}% of assets are tracked with ownership. ${unassignedCount} need assignment for full accountability.`
+    ];
+    
+    let assignmentInsight = randomChoice(assignmentInsights);
+    
+    // Override for critical situations
     if (unassignedCount === 0) {
-      assignmentInsight = `✅ Perfect! All ${totalAssets} assets are assigned to employees.`;
+      const perfectInsights = [
+        `✅ Perfect accountability! All ${totalAssets} assets are assigned (${assignedCount} individual, ${sharedCount} shared).`,
+        `🎯 100% assignment rate achieved! ${assignedCount} individually assigned, ${sharedCount} shared resources.`,
+        `🏆 Excellent tracking: Every asset has an owner. ${assignedPercent}% individual, ${sharedPercent}% shared.`
+      ];
+      assignmentInsight = randomChoice(perfectInsights);
     } else if (unassignedPercent > 30) {
-      assignmentInsight = `⚠️ ${unassignedCount} assets (${unassignedPercent}%) are unassigned. Consider assigning them to improve tracking and accountability.`;
-    } else if (unassignedPercent > 10) {
-      assignmentInsight = `💡 ${assignedCount} assets are assigned (${assignedPercent}%). ${unassignedCount} assets remain unassigned.`;
-    } else {
-      assignmentInsight = `✅ Excellent! ${assignedPercent}% of assets are assigned to employees. Only ${unassignedCount} unassigned.`;
+      const criticalInsights = [
+        `⚠️ ${unassignedCount} assets (${unassignedPercent}%) lack owners. This creates accountability gaps and loss risk.`,
+        `📋 High unassignment rate: ${unassignedPercent}%. Assign owners to improve tracking and reduce loss/theft risk.`,
+        `🚨 ${unassignedCount} assets untracked. Immediate action needed: assign to employees or mark as shared resources.`
+      ];
+      assignmentInsight = randomChoice(criticalInsights);
     }
     
     res.json({

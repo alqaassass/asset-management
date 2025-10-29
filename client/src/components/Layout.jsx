@@ -195,10 +195,8 @@ function Layout({ onLogout }) {
         )}
       </nav>
 
-      <main className="max-w-7xl mx-auto py-4 px-4 sm:py-6 sm:px-6 lg:px-8 relative z-10">
-        <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
-          <Outlet />
-        </div>
+      <main className="max-w-7xl mx-auto py-4 px-4 sm:py-6 sm:px-6 lg:px-8">
+        <Outlet />
       </main>
     </div>
   );
