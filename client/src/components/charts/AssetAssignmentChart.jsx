@@ -11,10 +11,11 @@ function AssetAssignmentChart({ data, insight }) {
 
   const chartData = data.map(item => ({
     ...item,
+    count: parseInt(item.count),
     fill: COLORS[item.category] || '#8B5CF6'
   }));
 
-  const totalCount = data.reduce((sum, item) => sum + parseInt(item.count), 0);
+  const totalCount = chartData.reduce((sum, item) => sum + item.count, 0);
 
   return (
     <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-md shadow-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700/50 transition-all duration-300 hover:shadow-2xl">
