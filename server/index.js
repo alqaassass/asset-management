@@ -26,17 +26,40 @@ app.get('/api/insights/charts', async (req, res) => {
   try {
     const pool = require('./config/db');
     
-    // 1. Asset Acquisition Trend (last 12 months)
+    // Get time range from query parameter (default: 1 year)
+    const timeRange = req.query.range || '1year';
+    let interval, dateFormat, truncFormat;
+    
+    switch(timeRange) {
+      case '1week':
+        interval = '7 days';
+        dateFormat = 'Dy';
+        truncFormat = 'day';
+        break;
+      case '1month':
+        interval = '30 days';
+        dateFormat = 'Mon DD';
+        truncFormat = 'day';
+        break;
+      case '1year':
+      default:
+        interval = '12 months';
+        dateFormat = 'Mon YYYY';
+        truncFormat = 'month';
+        break;
+    }
+    
+    // 1. Asset Acquisition Trend
     const trendResult = await pool.query(`
       SELECT 
-        TO_CHAR(DATE_TRUNC('month', created_at), 'Mon YYYY') as month,
+        TO_CHAR(DATE_TRUNC($1, created_at), $2) as month,
         COUNT(*) as count,
-        DATE_TRUNC('month', created_at) as month_date
+        DATE_TRUNC($1, created_at) as month_date
       FROM assets 
-      WHERE created_at >= NOW() - INTERVAL '12 months'
-      GROUP BY DATE_TRUNC('month', created_at)
-      ORDER BY DATE_TRUNC('month', created_at)
-    `);
+      WHERE created_at >= NOW() - INTERVAL '${interval}'
+      GROUP BY DATE_TRUNC($1, created_at)
+      ORDER BY DATE_TRUNC($1, created_at)
+    `, [truncFormat, dateFormat]);
     
     // 2. Status Distribution
     const statusResult = await pool.query(`
@@ -152,9 +175,9 @@ app.get('/api/insights/charts', async (req, res) => {
     const topType = typeResult.rows[0];
     const secondType = typeResult.rows[1];
     const thirdType = typeResult.rows[2];
-    const topTypePercent = ((topType.count / totalAssets) * 100).toFixed(0);
+    const topTypePercent = ((parseInt(topType.count) / totalAssets) * 100).toFixed(0);
     const typeCount = typeResult.rows.length;
-    const top3Count = (topType.count + (secondType?.count || 0) + (thirdType?.count || 0));
+    const top3Count = parseInt(topType.count) + parseInt(secondType?.count || 0) + parseInt(thirdType?.count || 0);
     const top3Percent = ((top3Count / totalAssets) * 100).toFixed(0);
     
     // Generate diverse type insights

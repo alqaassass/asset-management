@@ -32,6 +32,29 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// Update employee
+router.put('/:id', auth, async (req, res) => {
+  try {
+    const { name, email, department } = req.body;
+    const result = await pool.query(
+      'UPDATE employees SET name = $1, email = $2, department = $3 WHERE id = $4 RETURNING *',
+      [name, email, department, req.params.id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Employee not found' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    if (error.code === '23505') {
+      res.status(400).json({ error: 'Employee email already exists' });
+    } else {
+      res.status(500).json({ error: 'Server error' });
+    }
+  }
+});
+
 // Delete employee
 router.delete('/:id', auth, async (req, res) => {
   try {
